@@ -9,7 +9,7 @@ and uses the [LJSpeech dataset](https://keithito.com/LJ-Speech-Dataset/).
 Distributed and Automatic Mixed Precision support relies on NVIDIA's [Apex] and [AMP].
 
 Visit our [website] for audio samples using our published [Tacotron 2] and
-[WaveGlow] models.
+[WaveGlow](https://drive.google.com/drive/u/1/folders/1CO7NEqXUE1o2vT091BOQp6hh7xbtLZwO) models.
 
 ![Alignment, Predicted Mel Spectrogram, Target Mel Spectrogram](tensorboard.png)
 
