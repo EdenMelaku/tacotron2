@@ -72,3 +72,50 @@ def _arpabet_to_sequence(text):
 
 def _should_keep_symbol(s):
   return s in _symbol_to_id and s is not '_' and s is not '~'
+
+
+def generateSegemnts(text):
+  sentences = text.split(". ")
+  sentenceList = []
+  for s in sentences:
+    queue = []
+    if (len(s.split(" ")) > 19):
+      split_by_comma = s.split(",")
+      for i in split_by_comma:
+        if (len(i.split(" ")) > 19):
+          # arr=[" "]
+          arr = splitt(i.split(" "), list())
+          s = ' '.join(map(str, arr))
+          sentenceList.append(s)
+
+        else:
+          sentenceList.append(i)
+    else:
+      sentenceList.append(s)
+
+  return sentenceList
+
+
+def splitt(text, ar):
+  arr = []
+  arr.append(ar)
+  arr.append(text[:int(len(text) / 2)])
+  if (len(arr[-1]) > 15):
+    temp = arr[-1]
+    arr.remove(-1)
+    a = splitt(temp, arr)
+  arr.append(text[int(len(text) / 2):])
+  if (len(arr[-1]) > 15):
+    temp = arr[-1]
+    arr.remove(-1)
+    a = splitt(temp, arr)
+
+  stringList = []
+  # arr.pop(0)
+  arr = arr[1:]
+  for se in arr:
+    stringList.append(" ".join(se))
+
+  return stringList
+
+
