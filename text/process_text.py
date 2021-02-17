@@ -18,10 +18,10 @@ step 3- is sentntence is not reduced in to a number of short sentence segments b
 import math
 letters=['A.', 'bee', 'see', 'dee', 'ie', 'ef', 'ji', 'ach', 'ay', 'jay', 'kei', 'el', 'em', 'en', 'ow', 'pee', 'kiw', 'are', 'aiS', 'tea', 'you', 'vee', 'double you', 'eks', 'waai.', 'zed']
 def generateSegemnts(text):
-   sentences=text.split(".")
+   #sentences=text.split(".")
    sentenceList=[]
 
-   for s in sentences:
+   for s in text:
        #print("set--- "+s)
        queue=[]
        if(len(s.split(" "))>19):
