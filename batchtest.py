@@ -2,16 +2,20 @@
 import numpy as np
 import torch
 
-from hparams import create_hparams
+from hparams import Create
 
 from train import load_model
 from text import text_to_sequence
 from text.process_text import generateSegemnts
 
+def generate_from_file(file_name, waveglow_pretrained_model,tacotron2_pretrained_model):
+    with open(file_name, "rb") as text:
+        audio = batch_inference(text.readlines(), waveglow_pretrained_model, tacotron2_pretrained_model)
+
 def batch_inference(article,waveglow_path,checkpoint_path):
      sentences=generateSegemnts(article)
 
-     hparams = create_hparams()
+     hparams = Create()
      hparams.sampling_rate = 22050
      print("loading tacotron model")
      model = load_model(hparams)
