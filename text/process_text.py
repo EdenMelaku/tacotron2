@@ -17,6 +17,9 @@ step 3- is sentntence is not reduced in to a number of short sentence segments b
 '''
 import math
 letters=['A.', 'bee', 'see', 'dee', 'ie', 'ef', 'ji', 'ach', 'ay', 'jay', 'kei', 'el', 'em', 'en', 'ow', 'pee', 'kiw', 'are', 'aiS', 'tea', 'you', 'vee', 'double you', 'eks', 'waai.', 'zed']
+
+
+
 def generateSegemnts(text):
    #sentences=text.split(".")
    sentenceList=[]
@@ -42,7 +45,35 @@ def generateSegemnts(text):
            sentenceList.append(s)
 
    return sentenceList
-array_of_sent=[]
+
+def generateSegemnts_from_file(fileName):
+  sentenceList = []
+  with open(fileName,"rb") as file:
+      lines=file.readlines()
+      for line in lines:
+          sentences=str(line).split(". ")
+
+          for sentence in sentences:
+              if (len(sentence.split(" ")) > 19):
+                  split_by_comma = sentence.split(",")
+                  for i in split_by_comma:
+                      if (len(i.split(" ")) > 19):
+                          splited_by_conj = split_by_conjuction(i.split(" ")).split("*")
+                          for sent in splited_by_conj:
+                              if (len(sent.split(" ")) > 19):
+                                  splited_by_comma = splitt_by_word_count(sent.split(" "))
+                                  sentenceList.extend(splited_by_comma.split("*"))
+                              else:
+                                  sentenceList.append(sent)
+
+                      else:
+                          sentenceList.append(i)
+              else:
+                  sentenceList.append(sentence)
+
+  return sentenceList
+
+
 def splitt_by_word_count(text):
     newtex=text
     x= math.ceil(len(text)/15)
@@ -98,13 +129,7 @@ def split_by_conjuction(text):
 
 
 if __name__=="__main__":
-    tex="Unfortunately, list has a few shortcomings. " \
-        "The biggest issue is that it can run into speed issue as it grows. " \
-        "then Python needs to do some memory allocations This can lead to some append() calls taking much longer than other ones or in other words this can be explained and also i believe i can do it and everyone can do it too."\
-        "The items in list are stored next to each other in memory, " \
-        "if the stack grows bigger than the block of memory that currently hold it. "
-
-    tex2=""
-    sentences= generateSegemnts(tex)
-    for s in sentences:
-        print(s)
+   fn="/home/eden/Documents/Articles/Art-1.txt"
+   list=generateSegemnts_from_file(fn)
+   for l in list:
+       print(l)

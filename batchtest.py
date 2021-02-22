@@ -6,14 +6,17 @@ from hparams import Create
 
 from train import load_model
 from text import text_to_sequence
-from text.process_text import generateSegemnts
+from text.process_text import generateSegemnts, generateSegemnts_from_file
 
-def generate_from_file(file_name, waveglow_pretrained_model,tacotron2_pretrained_model):
+def generate_from_file(file_name,wavglow_path,checkpoint_path):
     with open(file_name, "rb") as text:
-        audio = batch_inference(text.readlines(), waveglow_pretrained_model, tacotron2_pretrained_model)
+        sentences=generateSegemnts_from_file(file_name)
+        audio=batch_inference(sentences,wavglow_path,checkpoint_path)
+    return audio
 
-def batch_inference(article,waveglow_path,checkpoint_path):
-     sentences=generateSegemnts(article)
+
+def batch_inference(sentences,waveglow_path,checkpoint_path):
+
 
      hparams = Create()
      hparams.sampling_rate = 22050
@@ -51,3 +54,7 @@ def batch_inference(article,waveglow_path,checkpoint_path):
 
 
 
+
+if __name__ == '__main__':
+    filen="/home/eden/test.txt"
+    generate_from_file(filen)
