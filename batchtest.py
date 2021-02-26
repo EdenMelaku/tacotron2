@@ -90,7 +90,7 @@ if __name__ == '__main__':
        tic=time.perf_counter()
        audio=generate_from_file_w_val(filen)
        toc=time.perf_counter()
-       wavfile.write(fn+".wav", 21050, np.asarray(audio.data))
+       wavfile.write("Audio_outputs/"+fn+".wav", 21050, np.asarray(audio.data))
        print("COMPLETED in "+str(toc-tic))
        print("################################################")
 
