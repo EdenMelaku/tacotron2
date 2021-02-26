@@ -6,12 +6,19 @@ from hparams import Create
 
 from train import load_model
 from text import text_to_sequence
-from text.process_text import generateSegemnts, generateSegemnts_from_file
+from process_text import generateSegemnts_from_file,validate_generated_segments
 
 def generate_from_file(file_name,wavglow_path,checkpoint_path):
     with open(file_name, "rb") as text:
         sentences=generateSegemnts_from_file(file_name)
         audio=batch_inference(sentences,wavglow_path,checkpoint_path)
+    return audio
+def generate_from_file_w_val(file_name,wavglow_path,checkpoint_path):
+    with open(file_name, "rb") as text:
+        sentences=generateSegemnts_from_file(file_name)
+        sentences=validate_generated_segments(sentences)
+        audio=batch_inference(sentences,wavglow_path,checkpoint_path)
+        print("completed")
     return audio
 
 
@@ -55,6 +62,13 @@ def batch_inference(sentences,waveglow_path,checkpoint_path):
 
 
 
+
 if __name__ == '__main__':
     filen="/home/eden/test.txt"
-    generate_from_file(filen)
+    waveglow="waveglow_256channels_universal_v5.pt"
+    tacotron="tacotron2_statedict.pt"
+
+    audio=generate_from_file_w_val(filen,waveglow,tacotron)
+    from scipy.io import wavfile
+    wavfile.write(filen+",wav", 21050, np.asarray(audio.data))
+    print("completed")
