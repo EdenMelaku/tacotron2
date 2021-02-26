@@ -7,38 +7,54 @@ from hparams import Create
 from train import load_model
 from text import text_to_sequence
 from process_text import generateSegemnts_from_file,validate_generated_segments
+import time
+tic = time.perf_counter()
 
-def generate_from_file(file_name,wavglow_path,checkpoint_path):
-    with open(file_name, "rb") as text:
+hparams = Create()
+waveglow = "waveglow_256channels_universal_v5.pt"
+tacotron = "tacotron2_statedict.pt"
+hparams.sampling_rate = 22050
+print("loading tacotron model")
+model = load_model(hparams)
+model.load_state_dict(torch.load(tacotron)['state_dict'])
+_ = model.cuda().eval().half()
+from waveglow.denoiser import Denoiser
+print("loading waveglow model")
+waveglow = torch.load(waveglow)['model']
+waveglow.cuda().eval().half()
+for k in waveglow.convinv:
+    k.float()
+denoiser = Denoiser(waveglow)
+toc = time.perf_counter()
+print("time lapsed for model initiation = "+str(toc-tic))
+
+def generate_from_file(file_name):
         sentences=generateSegemnts_from_file(file_name)
-        audio=batch_inference(sentences,wavglow_path,checkpoint_path)
-    return audio
-def generate_from_file_w_val(file_name,wavglow_path,checkpoint_path):
-    with open(file_name, "rb") as text:
+        audio=batch_inference(sentences)
+        return audio
+
+def generate_from_file_w_val(file_name):
+        tic1=time.perf_counter()
         sentences=generateSegemnts_from_file(file_name)
         sentences=validate_generated_segments(sentences)
-        audio=batch_inference(sentences,wavglow_path,checkpoint_path)
-        print("completed")
-    return audio
+        toc1=time.perf_counter()
+        tic2=time.perf_counter()
+        audio=batch_inference(sentences)
+        toc2=time.perf_counter()
+        print("number of sentences = "+str(len(sentences)))
+        c=0
+        for l in sentences:
+            c+=len(l.split(" "))
+        print("number of characters = "+str(c))
+        print("time to generate sentence segments = " + str(toc1 - tic1))
+        print("time to process Audio segments = " + str(toc2 - tic2))
+        return audio
 
 
-def batch_inference(sentences,waveglow_path,checkpoint_path):
+def batch_inference(sentences):
 
 
-     hparams = Create()
-     hparams.sampling_rate = 22050
-     print("loading tacotron model")
-     model = load_model(hparams)
-
-     model.load_state_dict(torch.load(checkpoint_path)['state_dict'])
-     _ = model.cuda().eval().half()
-     from waveglow.denoiser import Denoiser
-     print("loading waveglow model")
-     waveglow = torch.load(waveglow_path)['model']
-     waveglow.cuda().eval().half()
-     for k in waveglow.convinv:
-         k.float()
-     denoiser = Denoiser(waveglow)
+     import time
      print("processing text")
      import wave
      au = np.array([])
@@ -64,11 +80,18 @@ def batch_inference(sentences,waveglow_path,checkpoint_path):
 
 
 if __name__ == '__main__':
-    filen="/home/eden/test.txt"
-    waveglow="waveglow_256channels_universal_v5.pt"
-    tacotron="tacotron2_statedict.pt"
-
-    audio=generate_from_file_w_val(filen,waveglow,tacotron)
+    filen="Articles/Art-"
+    i=1
     from scipy.io import wavfile
-    wavfile.write(filen+",wav", 21050, np.asarray(audio.data))
-    print("completed")
+    while (i<=10):
+       fn=filen+str(i)+".txt"
+       print("################################################")
+       print("file name = "+fn)
+       tic=time.perf_counter()
+       audio=generate_from_file_w_val(filen)
+       toc=time.perf_counter()
+       wavfile.write(fn+".wav", 21050, np.asarray(audio.data))
+       print("COMPLETED in "+str(toc-tic))
+       print("################################################")
+
+    print("ALL COMPLETED")
