@@ -50,10 +50,12 @@ def generateSegemnts(text):
 
 
 def generateSegemnts_from_file(fileName):
+    from text.cleaners import collapse_whitespace
     sentenceList = []
     with open(fileName, "r",encoding='utf-8') as file:
         lines = file.readlines()
         for line in lines:
+            line=collapse_whitespace(line)
             sentences = str(line).split(". ")
 
             for sentence in sentences:
@@ -95,6 +97,7 @@ def validate_generated_segments(segments):
       segments[j]=segments[j].replace('”', ' ')
       segments[j]=segments[j].replace('“', ' ')
       segments[j]=segments[j].replace('"', " ")
+      segments[j]= " ".join(segments[j].split())
 
       n_words=len(segments[j].split(" "))
       #print("/######################" + segments[j] + "/////////////////////////////////////")
@@ -144,6 +147,7 @@ def validate_generated_segments(segments):
                  #print("-------------DCDDDDDD------------------------")
 
       else:
+
           validated.append(segments[j])
 
           j+=1
@@ -151,8 +155,10 @@ def validate_generated_segments(segments):
 
           #print("======="+validated[len(validated)-1]+"=======")
     #print("======================="+str(cou)+"======================================")
-
-
+    finalValidated=[]
+    for v in validated:
+        v= " ".join(v.split())
+        finalValidated.append(v)
     return validated
 
 
@@ -217,10 +223,12 @@ def split_by_conjuction(text):
 
 
 if __name__ == "__main__":
-    fn = "/home/eden/Documents/Articles/Art-3.txt"
+    '''import time
+    tic=time.perf_counter()
+    fn = "/home/eden/Documents/Articles/Art-1.txt"
     list = generateSegemnts_from_file(fn)
 
-    '''print("+++++++++++++++++++++++++++++++++++++++++++++++++++")'''
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++")
     count=0
     c1=0
     for l in list:
@@ -246,6 +254,45 @@ if __name__ == "__main__":
     print("count == "+str(count))
     print("::::::::::::::::::::problematic::::::::::::::::::::::::::")
     print(o)
+    toc=time.perf_counter()
+    print("time lapsed  = " + str(toc - tic))
 
     print(len(validated))
-    print("count== " + str(c))
+    print("count== " + str(c))'''
+    filen = "Articles/Art-"
+    i = 1
+    from scipy.io import wavfile
+    import time
+    while (i <= 10):
+        fn = filen + str(i) + ".txt"
+        print("################################################")
+        print("file name = " + fn)
+        tic = time.perf_counter()
+        se = generateSegemnts_from_file(fn)
+        se=validate_generated_segments(se)
+        # audio=generate_from_file_w_val(fn)
+        toc=time.perf_counter()
+
+        # wavfile.write("Audio_outputs/"+fn+".wav", 21050, np.asarray(audio.data))
+        print("COMPLETED in " + str(toc - tic))
+        print("################################################")
+        i += 1
+
+
+
+    print("ALL COMPLETED")
+    se = generateSegemnts_from_file(filen+"8.txt")
+    se = validate_generated_segments(se)
+
+    o = 0
+    for v in se:
+
+        ov = len(v.split(" "))
+        if (ov > 19 or ov < 4):
+            o += 1
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            print(v)
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
+        print(v)
+    print("################" + str(o) + "################################")
