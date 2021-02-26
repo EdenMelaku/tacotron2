@@ -88,10 +88,11 @@ if __name__ == '__main__':
        print("################################################")
        print("file name = "+fn)
        tic=time.perf_counter()
-       audio=generate_from_file_w_val(filen)
+       audio=generate_from_file_w_val(fn)
        toc=time.perf_counter()
        wavfile.write("Audio_outputs/"+fn+".wav", 21050, np.asarray(audio.data))
        print("COMPLETED in "+str(toc-tic))
        print("################################################")
+       i+=1
 
     print("ALL COMPLETED")
