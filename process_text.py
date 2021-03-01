@@ -116,7 +116,7 @@ def validate_generated_segments(segments):
                 #print(seg)
                 #print("-------------------------------------")
             else:
-                nw = segments[j] + ", "+segments[j + 1]+"."
+                nw = segments[j] + ", "+segments[j + 1]
                 cou+=1
                 seg= splitt_by_word_count(nw.split(" "))
                 validated.extend(seg.split("*"))
@@ -157,7 +157,7 @@ def validate_generated_segments(segments):
     #print("======================="+str(cou)+"======================================")
     finalValidated=[]
     for v in validated:
-        v= " ".join(v.split())
+        v= " ".join(v.split())+"."
         finalValidated.append(v)
     return validated
 
