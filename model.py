@@ -6,7 +6,7 @@ from torch.nn import functional as F
 from layers import ConvNorm, LinearNorm
 from utils import to_gpu, get_mask_from_lengths
 
-
+max=False
 class LocationLayer(nn.Module):
     def __init__(self, attention_n_filters, attention_kernel_size,
                  attention_dim):
@@ -444,7 +444,7 @@ class Decoder(nn.Module):
                 break
             elif len(mel_outputs) == self.max_decoder_steps:
                 print("Warning! Reached max decoder steps")
-                return 0, 0, 0, True
+                max=True
 
 
             decoder_input = mel_output
@@ -452,7 +452,7 @@ class Decoder(nn.Module):
         mel_outputs, gate_outputs, alignments = self.parse_decoder_outputs(
             mel_outputs, gate_outputs, alignments)
 
-        return mel_outputs, gate_outputs, alignments, False
+        return mel_outputs, gate_outputs, alignments
 
 
 class Tacotron2(nn.Module):
@@ -527,4 +527,4 @@ class Tacotron2(nn.Module):
         outputs = self.parse_output(
             [mel_outputs, mel_outputs_postnet, gate_outputs, alignments])
 
-        return outputs
+        return outputs,max
