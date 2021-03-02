@@ -2,6 +2,7 @@
 one of the limitations of this model is that it cannot read abbriviations or a single alphabetic character along or separately
 so i am just gonna try giving every alphabet letter a corresponding word. eg B--> bee
 '''
+from nltk.tokenize.punkt import PunktParameters
 
 '''
 besides the above limitation the model cannot generate sentences that are longer than 11seconds when read, so approximately the model can read approximately 20 words with in 11 sec.
@@ -63,15 +64,30 @@ def generate_by_psbd(filename):
             line=collapse_whitespace(line)
             sentences=seg.segment(line)
             sentenceList.extend(sentences)
-    '''lin=""
     max=0
+    lin=""
+    from nltk.tokenize.punkt import PunktSentenceTokenizer
+    tokenizer = PunktSentenceTokenizer()
+
     for l in sentenceList:
-        if(len(l.split(" "))>max):
-            max=len(l.split(" "))
+        leng=len(l.split(" "))
+        if(leng>max):
             lin=l
+            max=leng
+    tokenizer.train(lin)
+    punkt_param = PunktParameters()
+
+
+    print(lin)
+    tok=tokenizer.tokenize(lin)
+    print(tok)
+    print(len(tok))
     print(max)
-    print(lin)'''
+
+
     return sentenceList
+
+
 def generateSegemnts_from_file(fileName):
     from text.cleaners import collapse_whitespace
     sentenceList = []
@@ -109,8 +125,28 @@ def generateSegemnts_from_file(fileName):
 
     return sentenceList
 
+def MaxDecoder_step_fix(segment):
+    validated=[]
+    #is sentence is too long this function will be called
+    if ("," in segment):
+        validated=segment.split(",")
+    else:
+        Splited_by_Conj=split_by_conjuction(segment)
+        if(Splited_by_Conj==False):validated=splitt_by_word_count(segment)
+        else:validated=Splited_by_Conj
+    final_Validated=[]
+    for seg in validated:
+        if(len(seg.split(""))>40):
+            final_Validated.extend(splitt_by_word_count(seg))
+        else:
+            final_Validated.append(seg)
 
-def validate_generated_segments(segments):
+    final_Validated
+
+
+
+
+def validate_generated_segments2(segments):
     validated = []
 
     j=0
@@ -236,6 +272,8 @@ def split_by_conjuction(text):
     if ("that" in text):
         index = text.index("that")
         text[index] = "that * "
+    else:
+        return False
     stringList = ""
 
     for se in text:
@@ -320,9 +358,15 @@ if __name__ == "__main__":
     print("################" + str(o) + "################################") '''
     filen = "Articles/Art-"
     i=1
-    while (i <= 10):
-        fn = filen + str(i) + ".txt"
-        print("################################################")
-        print("file name = " + fn)
+    fn=filen+"2.txt"
+    #se = generate_by_psbd(fn)
+    i=1
+    while i<12:
+        fn=filen+str(i)+".txt"
         i+=1
-        se = generate_by_psbd(fn)
+        generate_by_psbd(fn)
+
+    tex="After a romantic first dance to Solomon Burke’s If You Need Me, Mister and misess Leahy (she will use her maiden name professionally) settled into several hours of serious dancing to songs spun by a D.J. And before they left for their Hawaiian honeymoon, Mister Leahy completed his first important act as husband."
+    print(tex[-1])
+    print(len(tex.split()))
+
