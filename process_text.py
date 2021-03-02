@@ -63,14 +63,15 @@ def generate_by_psbd(filename):
             line=collapse_whitespace(line)
             sentences=seg.segment(line)
             sentenceList.extend(sentences)
-    lin=""
+    '''lin=""
     max=0
     for l in sentenceList:
         if(len(l.split(" "))>max):
             max=len(l.split(" "))
             lin=l
     print(max)
-    print(lin)
+    print(lin)'''
+    return sentenceList
 def generateSegemnts_from_file(fileName):
     from text.cleaners import collapse_whitespace
     sentenceList = []
