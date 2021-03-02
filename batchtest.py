@@ -6,7 +6,7 @@ from hparams import Create
 
 from train import load_model
 from text import text_to_sequence
-from process_text import generateSegemnts_from_file,validate_generated_segments
+from process_text import generateSegemnts_from_file,validate_generated_segments, generate_by_psbd
 import time
 tic = time.perf_counter()
 
@@ -27,6 +27,11 @@ for k in waveglow.convinv:
 denoiser = Denoiser(waveglow)
 toc = time.perf_counter()
 print("time lapsed for model initiation = "+str(toc-tic))
+
+def generate_W_seg(filename):
+    sentences=generate_by_psbd(filename)
+    audio=batch_inference(sentences)
+    return audio
 
 def generate_from_file(file_name):
         sentences=generateSegemnts_from_file(file_name)
@@ -88,9 +93,10 @@ if __name__ == '__main__':
        print("################################################")
        print("file name = "+fn)
        tic=time.perf_counter()
-       audio=generate_from_file_w_val(fn)
-       toc=time.perf_counter()
-       wavfile.write("Audio_outputs/"+fn+".wav", 21050, np.asarray(audio.data))
+       se=generate_from_file_w_val(fn)
+       #audio=generate_from_file_w_val(fn)
+       #toc=time.perf_counter()
+       #wavfile.write("Audio_outputs/"+fn+".wav", 21050, np.asarray(audio.data))
        print("COMPLETED in "+str(toc-tic))
        print("################################################")
        i+=1

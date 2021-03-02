@@ -48,7 +48,29 @@ def generateSegemnts(text):
 
     return sentenceList
 
-
+def generate_by_psbd(filename):
+    from text.cleaners import collapse_whitespace
+    import pysbd
+    sentenceList = []
+    seg = pysbd.Segmenter(language="en", clean=False)
+    with open(filename, "r",encoding='utf-8') as file:
+        lines = file.readlines()
+        for line in lines:
+            line= line.replace('—', ' ')
+            line= line.replace('”', ' ')
+            line= line.replace('“', ' ')
+            line= line.replace('"', " ")
+            line=collapse_whitespace(line)
+            sentences=seg.segment(line)
+            sentenceList.extend(sentences)
+    lin=""
+    max=0
+    for l in sentenceList:
+        if(len(l.split(" "))>max):
+            max=len(l.split(" "))
+            lin=l
+    print(max)
+    print(lin)
 def generateSegemnts_from_file(fileName):
     from text.cleaners import collapse_whitespace
     sentenceList = []
@@ -157,7 +179,8 @@ def validate_generated_segments(segments):
     #print("======================="+str(cou)+"======================================")
     finalValidated=[]
     for v in validated:
-        v= " ".join(v.split())+"."
+        v= " ".join(v.split())
+        v+="."
         finalValidated.append(v)
     return validated
 
@@ -258,7 +281,6 @@ if __name__ == "__main__":
     print("time lapsed  = " + str(toc - tic))
 
     print(len(validated))
-    print("count== " + str(c))'''
     filen = "Articles/Art-"
     i = 1
     from scipy.io import wavfile
@@ -277,10 +299,9 @@ if __name__ == "__main__":
         print("COMPLETED in " + str(toc - tic))
         print("################################################")
         i += 1
+    
 
-
-
-    print("ALL COMPLETED")
+    #print("ALL COMPLETED")
     se = generateSegemnts_from_file(filen+"8.txt")
     se = validate_generated_segments(se)
 
@@ -295,4 +316,12 @@ if __name__ == "__main__":
             print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
         print(v)
-    print("################" + str(o) + "################################")
+    print("################" + str(o) + "################################") '''
+    filen = "Articles/Art-"
+    i=1
+    while (i <= 10):
+        fn = filen + str(i) + ".txt"
+        print("################################################")
+        print("file name = " + fn)
+        i+=1
+        se = generate_by_psbd(fn)
