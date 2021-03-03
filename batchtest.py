@@ -32,17 +32,6 @@ def generate_W_seg(filename):
     sentences=generate_by_psbd(filename)
     audio=batch_inference(sentences)
     return audio
-from process_text import MaxDecoder_step_fix
-def warning_handler(line):
-    if(len(line.split(" "))>50):
-        print("Fixing long sentence")
-        segments=MaxDecoder_step_fix(line)
-        return segments
-    else:
-        if(line[-1]!='.' or line[-1]!='?'):
-            line=line+"."
-            return line
-
 
 
 def generate_from_file(file_name):
@@ -74,57 +63,35 @@ def batch_inference(sentences):
      import time
      print("processing text")
      import wave
+     i=0
      au = np.array([])
-     warning=0
-     for line in sentences:
-             warning=0
-             sequence = np.array(text_to_sequence(line, ['english_cleaners']))[None, :]
+     leng=len(sentences)
+     warning = 0
+     while i<leng:
+
+             sequence = np.array(text_to_sequence(sentences[i], ['english_cleaners']))[None, :]
              sequence = torch.autograd.Variable(
                  torch.from_numpy(sequence)).cuda().long()
 
              mel_outputs, mel_outputs_postnet, _, alignments,is_max = model.inference(sequence)
-             if(is_max):
-                 warning=1
-                 seg=warning_handler(line)
-                 fixed = True
+             if(len(mel_outputs) == hparams.max_decoder_steps):
+                 warning+=1
+             if(warning==3):
+                 print("the system have encountered processing this sentence ")
+                 print("#####################################################")
+                 print(sentences[i])
+                 print("#####################################################")
+                 print("Aborting....")
+                 break
 
-                 if(isinstance(seg, list)):
-                     for s in seg:
-                         sequence = np.array(text_to_sequence(s, ['english_cleaners']))[None, :]
-                         sequence = torch.autograd.Variable(
-                             torch.from_numpy(sequence)).cuda().long()
-                         mel_outputs, mel_outputs_postnet, _, alignments, is_max = model.inference(sequence)
-                         if (is_max):
-                             print("the system have encountered problem processing this sentence ** "+s)
-                             fixed=False
+             else:
+               warning=0
+               i+=1
+               with torch.no_grad():
+                  audio = waveglow.infer(mel_outputs_postnet, sigma=0.666)
+                  audio_denoised = denoiser(audio, strength=0.01)[:, 0]
+                  au = np.concatenate((au, audio_denoised.cpu().numpy()), axis=None)
 
-                         with torch.no_grad():
-                             audio = waveglow.infer(mel_outputs_postnet, sigma=0.666)
-                             audio_denoised = denoiser(audio, strength=0.01)[:, 0]
-                             au = np.concatenate((au, audio_denoised.cpu().numpy()), axis=None)
-
-                 else:
-                     sequence = np.array(text_to_sequence(seg, ['english_cleaners']))[None, :]
-                     sequence = torch.autograd.Variable(
-                         torch.from_numpy(sequence)).cuda().long()
-                     mel_outputs, mel_outputs_postnet, _, alignments, is_max = model.inference(sequence)
-                     if (is_max):
-                         print("the system have encountered problem processing this sentence ** " + s)
-                         fixed = False
-                     with torch.no_grad():
-                         audio = waveglow.infer(mel_outputs_postnet, sigma=0.666)
-                         audio_denoised = denoiser(audio, strength=0.01)[:, 0]
-                         au = np.concatenate((au, audio_denoised.cpu().numpy()), axis=None)
-                 if(fixed):
-                     print("The system have FIXED the of problem generating audio for ** "+line)
-                 continue
-
-
-
-             with torch.no_grad():
-                 audio = waveglow.infer(mel_outputs_postnet, sigma=0.666)
-                 audio_denoised = denoiser(audio, strength=0.01)[:, 0]
-                 au = np.concatenate((au, audio_denoised.cpu().numpy()), axis=None)
      return au
 
 

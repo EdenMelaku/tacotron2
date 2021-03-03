@@ -447,7 +447,7 @@ class Decoder(nn.Module):
                 break
             elif len(mel_outputs) == self.max_decoder_steps:
                 print("Warning! Reached max decoder steps")
-                max=True
+
 
 
             decoder_input = mel_output
@@ -530,4 +530,4 @@ class Tacotron2(nn.Module):
         outputs = self.parse_output(
             [mel_outputs, mel_outputs_postnet, gate_outputs, alignments])
 
-        return mel_outputs,mel_outputs_postnet,gate_outputs,alignments,max
+        return outputs

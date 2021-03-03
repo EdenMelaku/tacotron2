@@ -64,26 +64,14 @@ def generate_by_psbd(filename):
             line=collapse_whitespace(line)
             sentences=seg.segment(line)
             sentenceList.extend(sentences)
-    max=0
-    lin=""
-    from nltk.tokenize.punkt import PunktSentenceTokenizer
-    tokenizer = PunktSentenceTokenizer()
 
+    validated_sentenceList=[]
     for l in sentenceList:
         leng=len(l.split(" "))
-        if(leng>max):
-            lin=l
-            max=leng
-    tokenizer.train(lin)
-    punkt_param = PunktParameters()
-
-
-    print(lin)
-    tok=tokenizer.tokenize(lin)
-    print(tok)
-    print(len(tok))
-    print(max)
-
+        if(leng>80):
+            validated_sentenceList.extend(MaxDecoder_step_fix(l))
+        else:
+            validated_sentenceList.append(l)
 
     return sentenceList
 
@@ -126,7 +114,6 @@ def generateSegemnts_from_file(fileName):
     return sentenceList
 
 def MaxDecoder_step_fix(segment):
-    validated=[]
     #is sentence is too long this function will be called
     if ("," in segment):
         validated=segment.split(",")
