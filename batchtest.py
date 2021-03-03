@@ -11,8 +11,8 @@ import time
 tic = time.perf_counter()
 
 hparams = Create()
-waveglow = "/content/drive/My Drive/NewsBrain TTS english models/waveglow_256channels_universal_v5.pt"
-tacotron = "/content/drive/My Drive/NewsBrain TTS english models/tacotron2_statedict.pt"
+waveglow = "waveglow_256channels_universal_v5.pt"
+tacotron = "tacotron2_statedict.pt"
 hparams.sampling_rate = 22050
 print("loading tacotron model")
 model = load_model(hparams)
