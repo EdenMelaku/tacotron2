@@ -427,6 +427,9 @@ class Decoder(nn.Module):
         gate_outputs: gate outputs from the decoder
         alignments: sequence of attention weights from the decoder
         """
+
+
+        max=False
         decoder_input = self.get_go_frame(memory)
 
         self.initialize_decoder_states(memory, mask=None)
