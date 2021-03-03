@@ -530,4 +530,4 @@ class Tacotron2(nn.Module):
         outputs = self.parse_output(
             [mel_outputs, mel_outputs_postnet, gate_outputs, alignments])
 
-        return outputs,max
+        return mel_outputs,mel_outputs_postnet,gate_outputs,alignments,max
