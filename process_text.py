@@ -146,7 +146,7 @@ def MaxDecoder_step_fix(segment):
 
 
 
-def validate_generated_segments2(segments):
+def validate_generated_segments(segments):
     validated = []
 
     j=0
